@@ -5,11 +5,12 @@
 //slow for large files, then use ramdisk
 //This version is linux only as it call rm and tar
 //11 Oct 2014
+//license: new BSD license
 char *passWord;
 char *sourceName;
 char *targetName;
-char *tempFile="Temporary.hb";
-char *tempTarGZ="Temporary.tar.gz";
+char tempFile[1024];//="Temporary.hb";
+char tempTarGZ[1024];//="Temporary.tar.gz";
 FILE *f1;
 FILE *f2;
 int crypt;
@@ -30,6 +31,9 @@ int main(int argc,char *argv[])
 		printf("encrypts d password Source-file-name\n");
 		return -1;
 	}
+	
+	strcpy(tempFile,tmpnam(NULL));
+	strcpy(tempTarGZ,tmpnam(NULL));
 	
 	crypt=( (*argv[1]=='e')||(*argv[1]=='E') );
 	passWord=argv[2];
@@ -92,9 +96,13 @@ int main(int argc,char *argv[])
 		return -1;
 	}
 	if (!crypt) if (!unpack()){printf("\nCould not unpack\n");return -1;}
-
-	system("rm Temporary.hb");
-	system("rm Temporary.tar.gz");
+	char fln[1024];
+	strcpy(fln,"rm ");
+	strcat(fln,tempFile);
+	system(fln);
+	strcpy(fln,"rm ");
+	strcat(fln,tempTarGZ);
+	system(fln);
 	return 0;
 }
 int pack(void)
